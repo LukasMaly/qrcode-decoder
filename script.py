@@ -1,6 +1,14 @@
 import cv2
 from pyzbar.pyzbar import decode, ZBarSymbol
 
+
+def draw_text(text, pt1, pt2, fontFace, fontScale, color, thickness):
+    """Write white text with colored background"""
+    textSize = cv2.getTextSize(text, fontFace, fontScale, thickness)
+    cv2.rectangle(output, (pt1[0] - 1, pt1[1] - textSize[0][1] - 2), (pt2[0] + textSize[0][0], pt2[1]), color, cv2.FILLED);
+    cv2.putText(output, symbol.data.decode(), (symbol.rect.left, symbol.rect.top - 1), fontFace, fontScale, (255, 255, 255), thickness)
+
+
 cv2.namedWindow('QR Code Decoder')
 cap = cv2.VideoCapture(0)
 
@@ -15,7 +23,10 @@ while True:
     decoded = decode(gray, symbols=[ZBarSymbol.QRCODE])
     for symbol in decoded:
         print(symbol)
-	
+        text = symbol.data.decode()
+        cv2.rectangle(output, (symbol.rect.left, symbol.rect.top), (symbol.rect.left + symbol.rect.width, symbol.rect.top + symbol.rect.height), (0, 255, 0), 2)
+        draw_text(text, (symbol.rect.left, symbol.rect.top), (symbol.rect.left, symbol.rect.top), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
     cv2.imshow('QR Code Decoder', output)
 
     # wait for the 'q' key
